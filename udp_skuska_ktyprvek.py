@@ -3,37 +3,42 @@
 # Zimný semester 2025/6
 # Úvod do programování  MZ370P19
 
-class Analyzator:
-    def __init__(self, subor):
-        self.subor = subor #ulozenie nazvu vstupneho suboru
-        self.sekvencia = [] #vytvorenie prazdnej sekvencie
-        self._nacitaj_data() #nacitanie dat
+class Analyzer:
+    def __init__(self):
+        self.sequence = [] #store input sequence
 
-    def _nacitaj_data(self):
-        with open(self.subor, "r") as f:
-            self.sekvencia = [float(x) for x in f.read().split()] #prevod kazdej hodnoty na typ float
+    def load_data(self, filename):
+        with open(filename, "r") as f:
+            self.sequence = [float(x) for x in f.read().split()]  #convert input values to float
 
-    def nacitaj_najmensi_k(self, k):
-        if k < 1 or k > len(self.sekvencia): #kontrola hodnoty k
-            raise ValueError("Neplatna hodnota k")
+    def _sel_sort(self, data): #selection sort sorting function [handwritten :)]
+        n = len(data) #store length of the seq
+        for i in range(n - 1): #iterate over each element except last
+            min_index = i #assume pos i holds the min.
+            for j in range(i + 1, n): #check all elements in unsorted part
+                if data[j][1] < data[min_index][1]: #compare val.
+                    min_index = j #update index if smaller el. found
+            data[i], data[min_index] = data[min_index], data[i] #swap current with new minimum
 
-        ind_sekvencia = list(enumerate(self.sekvencia)) # uloženie pôvodných pozícií pomocou enumerate
-
-        ind_sekvencia.sort(key=lambda x: x[1])  # triedenie podľa hodnoty
-
-        pozicia, hodnota = ind_sekvencia[k-1] #vyber k najmeniseho prvku
-        return hodnota, pozicia
+    def find_k_small(self, k):
+        if k < 1 or k > len(self.sequence): #validate if K is within bounds
+            raise ValueError("Invalid value of k") #error message i K is not valid
+        indexed_sequence = list(enumerate(self.sequence)) #store original positions
+        self._sel_sort(indexed_sequence)   #sort using sorting algorithm _sel_sort
+        position, value = indexed_sequence[k - 1] #select k smallest element
+        return value, position
 
 def main():
-    subor = "vstupny_subor_ukol_2.txt"
-    funkcia = Analyzator(subor)
+    filename = "vstupny_subor_ukol_2.txt" #input file//can be changed to input("filename.txt :") for user custom file
+    analyzer = Analyzer()
+    analyzer.load_data(filename)
 
-    k = int(input("Zadajte k: "))
+    k = int(input("Enter k: ")) #user input for K
 
-    hodnota, pozicia = funkcia.nacitaj_najmensi_k(k) #zavolanie funkcie na najdenie k-prvku
+    value, position = analyzer.find_k_small(k)
 
-    print(f"{k}-ty najmensi prvok ma hodnotu {hodnota}")
-    print(f"Povodna pozicia v postupnosti je {pozicia+1}") #+1 pretoze pouzivatel pocita od 1 nie 0
+    print(f"The {k}-th smallest element has value {value}")
+    print(f"Original position in the sequence is {position + 1}") #+1 because user indexing starts from 1
 
-if __name__ == "__main__": #spustenie programu iba ak je subor spusteny priamo
-    main()
+if __name__ == "__main__":
+    main() #execute main func. if script is run direct.
