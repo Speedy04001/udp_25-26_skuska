@@ -3,42 +3,43 @@
 # Zimný semester 2025/6
 # Úvod do programování  MZ370P19
 
-class Analyzator:
+class Analyzer:
+    support = set(
+        "AÁÄBCČDĎEÉFGHIÍJKLĽĹMNŇOÓÔPQRŔSŠTŤUÚVWXYÝZŽ"
+        "aáäbcčdďeéfghiíjklľĺmnňoóôpqrŕsštťuúvwxyýzž"
+        "0123456789"
+        ",.?!;"
+    )  # supported character list
+
     def __init__(self, text):
-        self.text = text #priradenie vstupu do inštančnej premennej pomocou self
-        self.pocetnost = {}  # vytvorenie prazdneho slovnika na pocitanie znakov
-        self.support = set(
-            "AÁÄBCČDĎEÉFGHIÍJKLĽĹMNŇOÓÔPQRŔSŠTŤUÚVWXYÝZŽ"
-            "aáäbcčdďeéfghiíjklľĺmnňoóôpqrŕsštťuúvwxyýzž"
-            "0123456789"
-            ",.?!;"
-        ) # nastavenie mnoziny podporovanych znakov
-        self.celk_poc = 0   #priradenie celkovej pocetnosti hodnotu 0
+        self.text = text #store all input text
+        self.freq = {}  #dicionary for char counts
+        self.total_count = 0   #total number of supported chars
 
-    def hlavnafunkcia(self):
-        self.pocetnost.clear()  #vycistenie slovniku
-        self.celk_poc = 0   #nastavenie celkovej pocetnosti na 0 pred novym pocitanim
+    def analyze(self):
+        self.freq.clear()  #dictionary reset
+        self.total_count = 0   #total count reset
 
-        for znak in self.text:
-            if znak in self.support:    #kontrola ci je znak podporovany
-                self.pocetnost[znak] = self.pocetnost.get(znak, 0) + 1 #ak znak je v slovniku zvys pocet, inak nastav na 1
-                self.celk_poc += 1
+        for char in self.text:
+            if char in Analyzer.support:    #check if char is supported
+                self.freq[char] = self.freq.get(char, 0) + 1 #if char is in dictionary add 1, else set to 1
+                self.total_count += 1
 
-    def vypis(self):
-        zoradene = sorted(
-            self.pocetnost.items(),
+    def result_print(self):
+        sorted_items = sorted(
+            self.freq.items(),
             key=lambda x: x[1],
             reverse=True
-        ) #zoradenie slovnika podla hodnoty absolutnej pocetnosti, zostupne
+        ) #sort by abs freq (desc)
 
-        print("Znak / Absolútna / Relatívna")
+        print("Character / Absolute freq. / Relative freq.")
 
-        for znak, abs_cetnost in zoradene: #pre kazdy znak a jeho pocetnost
-            relativna = abs_cetnost / self.celk_poc #vypocet relativnej pocetnosti
-            relativna=relativna*100
-            print(f"{znak} / {abs_cetnost} / {relativna:.1f}% textu")
+        for char, abs_freq in sorted_items: #for every char and its freq
+            rel_freq = abs_freq / self.total_count #relative freq operation
+            rel_freq=rel_freq*100
+            print(f"{char} / {abs_freq} / {rel_freq:.1f}% textu")
 
-txt = input("Zadaj svoj text: ") #ui
-analyzator = Analyzator(txt)
-analyzator.hlavnafunkcia() #spustenie hlavneho programu
-analyzator.vypis()  #výpis výsledku
+txt = input("Enter text: ") #ui
+analyzer = Analyzer(txt)
+analyzer.analyze() #start of main script 
+analyzer.result_print()  #output printing
